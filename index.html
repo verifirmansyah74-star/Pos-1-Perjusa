@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Kartu Pramuka - Dasadarma & Trisatya (45 Soal)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pramuka: {
+                            brownDark: '#4A2810',
+                            brownMedium: '#795548',
+                            brownLight: '#D7CCC8',
+                            gold: '#FFC107',
+                            goldDark: '#FFA000',
+                            cream: '#FFF8E7',
+                            red: '#D32F2F',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #3E2723;
+            background-image: radial-gradient(#5D4037 1px, transparent 1px);
+            background-size: 20px 20px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .font-header {
+            font-family: 'Fredoka', cursive, sans-serif;
+        }
+
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .card-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .card-inner.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        @keyframes pulse-star {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        .animate-star {
+            animation: pulse-star 1.5s infinite;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #4A2810;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FFC107;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col justify-between pb-6">
+
+    <header class="bg-pramuka-brownDark border-b-4 border-pramuka-gold shadow-lg sticky top-0 z-30">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 bg-pramuka-gold rounded-full flex items-center justify-center shadow-inner border-2 border-amber-200">
+                    <i class="fa-solid fa-compass text-pramuka-brownDark text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-header text-xl sm:text-2xl text-amber-100 font-bold tracking-wide leading-tight">
+                        KUIS PRAMUKA
+                    </h1>
+                    <p class="text-xs text-amber-300 font-semibold">15 Kartu &bull; 45 Soal Dasadarma & Trisatya</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 ml-auto">
+                <button id="soundToggleBtn" onclick="toggleSound()" class="bg-amber-900/80 hover:bg-amber-800 text-amber-200 px-3 py-2 rounded-xl border border-amber-600/50 flex items-center gap-2 text-xs font-bold transition active:scale-95">
+                    <i id="soundIcon" class="fa-solid fa-volume-high text-amber-400"></i>
+                    <span id="soundText" class="hidden sm:inline">Suara: ON</span>
+                </button>
+                <button onclick="resetGame()" class="bg-pramuka-red hover:bg-red-700 text-white px-3 py-2 rounded-xl border border-red-400 flex items-center gap-2 text-xs font-bold transition active:scale-95 shadow-md">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Ulangi</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 mt-4 flex-1 w-full">
+        <section class="bg-pramuka-cream rounded-2xl p-4 shadow-xl border-2 border-pramuka-gold mb-6">
+            <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="bg-amber-100/80 p-2 sm:p-3 rounded-xl border border-amber-300">
+                    <div class="text-xs text-amber-800 font-bold uppercase tracking-wider">Progres Soal</div>
+                    <div class="text-lg sm:text-2xl font-black text-amber-900 font-header" id="progressText">0 / 45</div>
+                </div>
+                <div class="bg-emerald-100/80 p-2 sm:p-3 rounded-xl border border-emerald-300">
+                    <div class="text-xs text-emerald-800 font-bold uppercase tracking-wider">Benar</div>
+                    <div class="text-lg sm:text-2xl font-black text-emerald-700 font-header" id="scoreText">0</div>
+                </div>
+                <div class="bg-blue-100/80 p-2 sm:p-3 rounded-xl border border-blue-300">
+                    <div class="text-xs text-blue-800 font-bold uppercase tracking-wider">Nilai</div>
+                    <div class="text-lg sm:text-2xl font-black text-blue-700 font-header" id="gradeText">0</div>
+                </div>
+            </div>
+
+            <div class="w-full bg-amber-200 rounded-full h-3 mt-3 overflow-hidden border border-amber-300">
+                <div id="progressBar" class="bg-gradient-to-r from-amber-500 to-pramuka-gold h-3 rounded-full transition-all duration-500 w-0"></div>
+            </div>
+        </section>
+
+        <div id="cardGrid" class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 mb-8">
+            <!-- 15 Kartu (Tiap Kartu = 3 Soal) -->
+        </div>
+    </main>
+
+    <!-- Modal Kuis -->
+    <div id="quizModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden transition-opacity duration-300">
+        <div class="bg-pramuka-cream w-full max-w-lg rounded-3xl shadow-2xl border-4 border-pramuka-gold overflow-hidden transform transition-all scale-95 opacity-0" id="modalContent">
+            <div class="bg-pramuka-brownDark p-4 text-amber-100 flex justify-between items-center border-b-2 border-pramuka-gold">
+                <div class="flex items-center gap-2">
+                    <span id="modalCategoryBadge" class="bg-pramuka-gold text-pramuka-brownDark font-extrabold text-xs px-2.5 py-1 rounded-full uppercase">
+                        Dasadarma 1
+                    </span>
+                    <span class="text-xs text-amber-300 font-semibold" id="modalCardNumber">Kartu #1 &bull; Soal 1/3</span>
+                </div>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-amber-900/50 hover:bg-amber-800 flex items-center justify-center text-amber-200 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-5 sm:p-6">
+                <div class="mb-5">
+                    <h3 id="modalQuestion" class="text-base sm:text-lg font-bold text-amber-950 leading-relaxed">
+                        Pertanyaan...
+                    </h3>
+                </div>
+
+                <div id="modalOptions" class="space-y-3 mb-4">
+                    <!-- Pilihan Jawaban -->
+                </div>
+
+                <div id="explanationBox" class="hidden mt-4 p-4 rounded-xl text-sm leading-relaxed border-2">
+                    <div class="font-bold flex items-center gap-2 mb-1" id="explanationHeader">
+                        <i id="explanationIcon" class="fa-solid"></i>
+                        <span id="explanationTitle">Pembahasan</span>
+                    </div>
+                    <p id="explanationText" class="text-slate-700"></p>
+                </div>
+            </div>
+
+            <div class="bg-amber-100 px-6 py-3 border-t border-amber-200 flex justify-between items-center">
+                <span class="text-xs font-bold text-amber-800" id="questionTracker">Soal 1 dari 3</span>
+                <span class="text-xs italic text-amber-700 font-semibold" id="autoAdvanceNotice">Pilih jawaban untuk melanjut...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Selesai -->
+    <div id="victoryModal" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-pramuka-cream w-full max-w-md rounded-3xl shadow-2xl border-4 border-pramuka-gold p-6 text-center">
+            <div class="w-20 h-20 bg-pramuka-gold rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-amber-200 shadow-lg animate-star">
+                <i class="fa-solid fa-trophy text-pramuka-brownDark text-4xl"></i>
+            </div>
+
+            <h2 class="font-header text-2xl sm:text-3xl text-amber-950 font-bold mb-1">SALAM PRAMUKA!</h2>
+            <p class="text-xs font-semibold text-amber-800 mb-4">Kamu telah menyelesaikan seluruh 45 Soal!</p>
+
+            <div class="bg-amber-100/90 rounded-2xl p-4 border border-amber-300 mb-6 space-y-2">
+                <div class="flex justify-between items-center text-sm font-bold text-amber-900 border-b border-amber-200 pb-2">
+                    <span>Jawaban Benar:</span>
+                    <span id="finalCorrect" class="text-emerald-700 text-base">0 / 45</span>
+                </div>
+                <div class="flex justify-between items-center text-sm font-bold text-amber-900 border-b border-amber-200 pb-2">
+                    <span>Nilai Akhir:</span>
+                    <span id="finalScore" class="text-blue-700 text-xl font-header">0</span>
+                </div>
+                <div class="text-xs text-amber-800 italic pt-1" id="finalMessage">
+                    Pramuka Sejati! Teruskan semangat belajarmu!
+                </div>
+            </div>
+
+            <button onclick="resetGame(); closeVictoryModal();" class="w-full bg-pramuka-gold hover:bg-pramuka-goldDark text-pramuka-brownDark font-header font-bold text-lg py-3 rounded-2xl border-2 border-amber-200 shadow-md transition active:scale-95">
+                <i class="fa-solid fa-rotate-right mr-2"></i> Main Lagi
+            </button>
+        </div>
+    </div>
+
+    <footer class="text-center text-xs text-amber-200/70 py-2">
+        <p>Kuis Edukasi Pramuka Indonesia &bull; Dasadarma & Trisatya (45 Soal)</p>
+    </footer>
+
+    <script>
+        // Data 15 Kartu, masing-masing berisi 3 Soal (Total = 45 Soal)
+        const cardsData = [
+            {
+                cardId: 1,
+                category: "Dasadarma 1",
+                icon: "fa-hands-praying",
+                questions: [
+                    {
+                        question: "Sikap manakah yang mencerminkan penerapan Dasadarma ke-1: 'Takwa kepada Tuhan Yang Maha Esa'?",
+                        options: [
+                            "Beribadah tepat waktu sesuai keyakinan agama masing-masing",
+                            "Menolong teman tanpa mengharapkan balasan",
+                            "Selalu menabung dan hemat dalam berbelanja",
+                            "Menjaga kerukunan saat musyawarah regu"
+                        ],
+                        answer: 0,
+                        explanation: "Dasadarma ke-1 mengajarkan setiap anggota Pramuka untuk taat menjalankan perintah Tuhan YME dan menjunjung toleransi beragama."
+                    },
+                    {
+                        question: "Bagaimana cara seorang Pramuka menghormati teman yang sedang beribadah di bumi perkemahan?",
+                        options: [
+                            "Tetap bernyanyi nyaring di dekat tempat ibadah",
+                            "Menjaga ketenangan dan tidak mengganggu jalannya ibadah",
+                            "Menaikkan volume pengeras suara regu",
+                            "Mengajaknya bermain saat jadwal ibadah"
+                        ],
+                        answer: 1,
+                        explanation: "Toleransi dan menjaga ketenangan saat orang lain beribadah adalah wujud pengamalan Takwa kepada Tuhan YME."
+                    },
+                    {
+                        question: "Sebelum melakukan kegiatan penjelajahan atau makan bersama, anggota Pramuka dibiasakan untuk...",
+                        options: [
+                            "Berfoto bersama terlebih dahulu",
+                            "Berdoa bersama sesuai agama dan kepercayaan masing-masing",
+                            "Menyanyikan lagu pop kesukaan",
+                            "Mengisi daftar hadir peserta"
+                        ],
+                        answer: 1,
+                        explanation: "Berdoa sebelum dan sesudah kegiatan merupakan wujud rasa syukur dan ketakwaan kepada Tuhan YME."
+                    }
+                ]
+            },
+            {
+                cardId: 2,
+                category: "Dasadarma 2",
+                icon: "fa-tree",
+                questions: [
+                    {
+                        question: "Menjaga kebersihan perkemahan serta tidak merusak tanaman saat penjelajahan sesuai dengan Dasadarma ke-...",
+                        options: ["Dasadarma ke-1", "Dasadarma ke-2", "Dasadarma ke-5", "Dasadarma ke-7"],
+                        answer: 1,
+                        explanation: "Dasadarma ke-2 berbunyi: 'Cinta alam dan kasih sayang sesama manusia', mewajibkan kita peduli lingkungan hidup."
+                    },
+                    {
+                        question: "Sikap kasih sayang sesama manusia yang paling tepat di bawah ini adalah...",
+                        options: [
+                            "Membantu kawan yang kesulitan menyeberangi sungai saat penjelajahan",
+                            "Membiarkan teman membawa beban tas regu sendirian",
+                            "Egois dalam membagi jatah makanan perkemahan",
+                            "Hanya mau berteman dengan anggota satu sekolah saja"
+                        ],
+                        answer: 0,
+                        explanation: "Kasih sayang sesama manusia tercermin dari kepedulian dan pertolongan yang kita berikan kepada sesama."
+                    },
+                    {
+                        question: "Tindakan apa yang menunjukkan prinsip 'Cinta Alam' ketika berkemah di hutan?",
+                        options: [
+                            "Menebang pohon sembarangan untuk kayu bakar",
+                            "Membuang sampah plastik ke dalam sungai",
+                            "Membawa kembali sampah sendiri dan tidak merusak vegetasi",
+                            "Membuat coretan pada batuan alam"
+                        ],
+                        answer: 2,
+                        explanation: "Pramuka sejati senantiasa menjaga kelestarian alam dan tidak meninggalkan sampah di alam terbuka."
+                    }
+                ]
+            },
+            {
+                cardId: 3,
+                category: "Dasadarma 3",
+                icon: "fa-shield-halved",
+                questions: [
+                    {
+                        question: "Menghormati orang yang lebih tua, bersikap sopan, serta berani mengakui kesalahan adalah wujud dari...",
+                        options: [
+                            "Rela menolong dan tabah",
+                            "Patuh dan suka bermusyawarah",
+                            "Patriot yang sopan dan kesatria",
+                            "Disiplin, berani, dan setia"
+                        ],
+                        answer: 2,
+                        explanation: "Dasadarma ke-3: 'Patriot yang sopan dan kesatria' mengajarkan jiwa kesatria, sopan santun, dan kebesaran hati."
+                    },
+                    {
+                        question: "Sikap 'Kesatria' seorang Pramuka dapat ditunjukkan dengan cara...",
+                        options: [
+                            "Mengambinghitamkan kawan ketika regu membuat kesalahan",
+                            "Berani mengakui kesalahan dan bersedia menerima konsekuensinya",
+                            "Melarikan diri saat diberi tugas piket",
+                            "Menolak untuk meminta maaf jika bersalah"
+                        ],
+                        answer: 1,
+                        explanation: "Jiwa kesatria berarti berani mengakui kesalahan, bertanggung jawab, dan siap memperbaiki diri."
+                    },
+                    {
+                        question: "Bagaimana cara bersikap sopan kepada pembina atau senior Pramuka?",
+                        options: [
+                            "Menyapa dan memberi salam Pramuka dengan ramah",
+                            "Pura-pura tidak melihat ketika bertemu",
+                            "Memotong pembicaraan saat pembina memberi instruksi",
+                            "Mengabaikan nasihat yang diberikan"
+                        ],
+                        answer: 0,
+                        explanation: "Menyapa, memberi salam, serta mendengarkan petunjuk adalah bentuk kesopanan seorang Patriot Pramuka."
+                    }
+                ]
+            },
+            {
+                cardId: 4,
+                category: "Dasadarma 4",
+                icon: "fa-people-group",
+                questions: [
+                    {
+                        question: "Ketika regu mengadakan diskusi untuk menentukan ketua regu, sikap yang benar sesuai Dasadarma ke-4 adalah...",
+                        options: [
+                            "Memaksa anggota lain mengikuti keinginan kita",
+                            "Menghargai pendapat teman dan mematuhi keputusan bersama",
+                            "Meninggalkan tempat karena tidak setuju",
+                            "Diam saja dan tidak memberikan masukan"
+                        ],
+                        answer: 1,
+                        explanation: "Dasadarma ke-4: 'Patuh dan suka bermusyawarah' mengutamakan mufakat dan kepatuhan terhadap hasil keputusan bersama."
+                    },
+                    {
+                        question: "Sifat 'Patuh' dalam Dasadarma ke-4 berarti seorang Pramuka...",
+                        options: [
+                            "Membangkang aturan perkemahan yang dibuat penggalang",
+                            "Setia dan taat menjalankan aturan serta perintah yang sah",
+                            "Menuruti perintah teman untuk berbuat jahat",
+                            "Hanya patuh jika dilihat oleh pembina"
+                        ],
+                        answer: 1,
+                        explanation: "Patuh artinya taat kepada ajaran kebaikan, undang-undang, serta instruksi yang benar dari pembina/pimpinan."
+                    },
+                    {
+                        question: "Apa yang harus dilakukan jika pendapat kita tidak terpilih dalam musyawarah regu?",
+                        options: [
+                            "Mogok ikut kegiatan regu",
+                            "Menerima keputusan dengan lapang dada dan mendukung penuh",
+                            "Marah kepada anggota regu lainnya",
+                            "Membuat regu baru sendiri"
+                        ],
+                        answer: 1,
+                        explanation: "Musyawarah mengajarkan demokrasi, kebesaran hati, serta komitmen menjalankan hasil mufakat bersama."
+                    }
+                ]
+            },
+            {
+                cardId: 5,
+                category: "Dasadarma 5",
+                icon: "fa-hand-holding-heart",
+                questions: [
+                    {
+                        question: "Pernyataan yang paling tepat menggambarkan Dasadarma ke-5 ('Rela menolong dan tabah') adalah...",
+                        options: [
+                            "Membantu korban bencana alam hanya jika diliput media",
+                            "Pantang menyerah saat menghadapi rintangan halang rintang",
+                            "Menolong teman dengan syarat dibayar",
+                            "Membantu teman tetapi mengeluh sepanjang perjalanan"
+                        ],
+                        answer: 1,
+                        explanation: "Dasadarma ke-5 melatih Pramuka agar ikhlas menolong sesama tanpa pamrih dan tabah (tidak mudah menyerah) hadapi kesulitan."
+                    },
+                    {
+                        question: "Arti dari kata 'Tabah' dalam Dasadarma ke-5 adalah...",
+                        options: [
+                            "Mudah putus asa saat hujan deras membasahi tenda",
+                            "Kuat menghadapi cobaan, kesulitan, dan tidak gampang mengeluh",
+                            "Marah-marah jika perjalanan penjelajahan terlalu jauh",
+                            "Selalu menyalahkan keadaan"
+                        ],
+                        answer: 1,
+                        explanation: "Tabah berarti teguh hati, sabar, dan tidak menyerah menghadapi berbagai kesulitan."
+                    },
+                    {
+                        question: "Contoh sikap 'Rela Menolong' dalam kehidupan sehari-hari di sekolah adalah...",
+                        options: [
+                            "Memberikan contekan saat ujian semester",
+                            "Membantu menjelaskan materi pelajaran kepada kawan yang belum paham",
+                            "Membiarkan teman yang terjatuh di halaman",
+                            "Hanya menolong jika diberi imbalan uang saku"
+                        ],
+                        answer: 1,
+                        explanation: "Rela menolong dilakukan secara ikhlas demi kebaikan sesama tanpa mengharapkan imbalan."
+                    }
+                ]
+            },
+            {
+                cardId: 6,
+                category: "Dasadarma 6",
+                icon: "fa-face-smile",
+                questions: [
+                    {
+                        question: "Membuat kerajinan tangan dari barang bekas dengan ceria dan penuh gembira merupakan pengamalan Dasadarma ke-...",
+                        options: ["Ke-4", "Ke-6", "Ke-8", "Ke-10"],
+                        answer: 1,
+                        explanation: "Dasadarma ke-6 berbunyi: 'Rajin, terampil, dan gembira'—Pramuka harus kreatif, terampil, serta selalu bersemangat."
+                    },
+                    {
+                        question: "Pramuka yang 'Terampil' dapat dibuktikan melalui kemampuan...",
+                        options: [
+                            "Menguasai teknik kepramukaan seperti tali-temali dan kompas",
+                            "Tidur seharian di dalam tenda",
+                            "Menghindari tugas piket kebersihan",
+                            "Membeli barang tanpa memikirkan fungsi"
+                        ],
+                        answer: 0,
+                        explanation: "Terampil berarti memiliki kecakapan, keterampilan praktis, serta solusi kreatif dalam memecahkan masalah."
+                    },
+                    {
+                        question: "Mengapa seorang Pramuka harus selalu 'Gembira' dalam menghadapi setiap kegiatan?",
+                        options: [
+                            "Agar bisa menertawakan penderitaan teman",
+                            "Karena kegembiraan menciptakan semangat positif dan kebersamaan",
+                            "Supaya diperbolehkan pulang lebih cepat",
+                            "Hanya sebagai syarat kelulusan syarat kecakapan umum"
+                        ],
+                        answer: 1,
+                        explanation: "Gembira membangun sikap optimis, keceriaan tim, serta daya tahan psikologis dalam perkemahan."
+                    }
+                ]
+            },
+            {
+                cardId: 7,
+                category: "Dasadarma 7",
+                icon: "fa-piggy-bank",
+                questions: [
+                    {
+                        question: "Seorang Pramuka menyisihkan uang saku untuk menabung dan menggunakan perlengkapan seperlunya. Ini adalah sikap...",
+                        options: [
+                            "Pelit dan mengirit",
+                            "Suci dalam pikiran",
+                            "Hemat, cermat, dan bersahaja",
+                            "Bertanggung jawab dan dipercaya"
+                        ],
+                        answer: 2,
+                        explanation: "Dasadarma ke-7: 'Hemat, cermat, dan bersahaja' mengajarkan kita tidak boros, teliti, dan hidup sederhana."
+                    },
+                    {
+                        question: "Sikap 'Bersahaja' dalam kehidupan seorang Pramuka ditunjukkan dengan...",
+                        options: [
+                            "Pamer barang-barang mewah di perkemahan",
+                            "Pola hidup sederhana, tidak berlebihan, dan tidak sombong",
+                            "Membeli baju baru setiap kali ada latihan Pramuka",
+                            "Menolak makan makanan konsumsi perkemahan"
+                        ],
+                        answer: 1,
+                        explanation: "Bersahaja artinya sederhana, wajar, serta tidak berlebih-lebihan dalam gaya hidup."
+                    },
+                    {
+                        question: "Contoh penerapana sikap 'Cermat' saat mempersiapkan perlengkapan camping adalah...",
+                        options: [
+                            "Mencatat dan mengecek ulang daftar barang bawaan agar tidak ada yang ketinggalan",
+                            "Asal memasukkan semua barang ke dalam tas tanpa diteliti",
+                            "Membawa barang-barang elektronik yang tidak diperlukan",
+                            "Menyuruh orang tua menyiapkan seluruh tas perlengkapan"
+                        ],
+                        answer: 0,
+                        explanation: "Cermat berarti teliti, berhati-hati, dan memperhitungkan segala sesuatu secara matang."
+                    }
+                ]
+            },
+            {
+                cardId: 8,
+                category: "Dasadarma 8",
+                icon: "fa-clock",
+                questions: [
+                    {
+                        question: "Datang tepat waktu saat latihan Pramuka serta tidak pernah mengkhianati janji kawan termasuk pengamalan Dasadarma ke-...",
+                        options: ["Dasadarma ke-2", "Dasadarma ke-6", "Dasadarma ke-8", "Dasadarma ke-9"],
+                        answer: 2,
+                        explanation: "Dasadarma ke-8: 'Disiplin, berani, dan setia' menekankan ketepatan waktu, keberanian membela kebenaran, serta kesetiaan."
+                    },
+                    {
+                        question: "Sikap 'Berani' dalam Dasadarma ke-8 diwujudkan dalam hal...",
+                        options: [
+                            "Berani berkelahi demi hal yang sepele",
+                            "Berani membela kebenaran dan mengakui kesalahan",
+                            "Berani melanggar tata tertib sekolah",
+                            "Berani memanjat pohon tanpa peralatan keselamatan"
+                        ],
+                        answer: 1,
+                        explanation: "Berani dalam Pramuka adalah berani melakukan apa yang benar dan bertindak sesuai kode etik."
+                    },
+                    {
+                        question: "Bagaimana wujud kesetiaan ('Setia') seorang Pramuka terhadap bangsa dan negara?",
+                        options: [
+                            "Mendukung ideologi yang bertentangan dengan Pancasila",
+                            "Setia pada Pancasila, UUD 1945, serta menjaga persatuan NKRI",
+                            "Acuh tak acuh terhadap sejarah perjuangan bangsa",
+                            "Membela teman yang jelas-jelas berbuat kejahatan"
+                        ],
+                        answer: 1,
+                        explanation: "Setia berarti teguh pada janji, setia kawan, serta setia pada tanah air dan konsensus bangsa."
+                    }
+                ]
+            },
+            {
+                cardId: 9,
+                category: "Dasadarma 9",
+                icon: "fa-award",
+                questions: [
+                    {
+                        question: "Diberi amanah menjaga inventaris sanggar Pramuka lalu melaksanakannya dengan sungguh-sungguh adalah bentuk sikap...",
+                        options: [
+                            "Bertanggung jawab dan dapat dipercaya",
+                            "Cinta alam dan kasih sayang",
+                            "Patriot yang sopan",
+                            "Suci dalam pikiran"
+                        ],
+                        answer: 0,
+                        explanation: "Dasadarma ke-9: 'Bertanggung jawab dan dapat dipercaya' artinya berani menanggung akibat tugas dan menjaga amanah."
+                    },
+                    {
+                        question: "Seseorang yang 'Dapat Dipercaya' (Trustworthy) ditandai dengan...",
+                        options: [
+                            "Sering mengingkari janji yang dibuatnya",
+                            "Berkata jujur dan memegang teguh rahasia/amanah yang diberikan",
+                            "Berubah pikiran sesuai keuntungan pribadi",
+                            "Suka menyebarkan informasi palsu"
+                        ],
+                        answer: 1,
+                        explanation: "Dapat dipercaya berarti setiap kata dan perbuatannya senantiasa dapat diandalkan dan jujur."
+                    },
+                    {
+                        question: "Apabila seorang Pemimpin Regu (Pinru) melalaikan tugas memimpin regunya, maka ia melanggar Dasadarma ke-...",
+                        options: ["Ke-1", "Ke-5", "Ke-9", "Ke-3"],
+                        answer: 2,
+                        explanation: "Melalaikan tugas dan amanah kepemimpinan merupakan pelanggaran terhadap Dasadarma ke-9."
+                    }
+                ]
+            },
+            {
+                cardId: 10,
+                category: "Dasadarma 10",
+                icon: "fa-heart",
+                questions: [
+                    {
+                        question: "Dasadarma ke-10 berbunyi 'Suci dalam pikiran, perkataan, dan perbuatan'. Contoh tindakan yang melanggarnya adalah...",
+                        options: [
+                            "Berkata jujur apa adanya",
+                            "Berpikir positif kepada kawan",
+                            "Menyebarkan gosip/hoaks yang tidak benar tentang teman",
+                            "Minta maaf saat bersalah"
+                        ],
+                        answer: 2,
+                        explanation: "Menyebarkan hoaks atau gosip melanggar kesucian pikiran dan perkataan dalam Dasadarma ke-10."
+                    },
+                    {
+                        question: "Apa arti 'Suci dalam Pikiran'?",
+                        options: [
+                            "Selalu berprasangka baik (husnudzon) dan tidak menyimpan niat jahat",
+                            "Tidak mau belajar hal-hal baru",
+                            "Memikirkan cara melanggar aturan tanpa ketahuan",
+                            "Menghafal seluruh materi tanpa memahami"
+                        ],
+                        answer: 0,
+                        explanation: "Suci dalam pikiran berarti menjaga hati dan benak dari keirian, kecurigaan buruk, atau niat tercela."
+                    },
+                    {
+                        question: "Berikut ini yang merupakan perpaduan antara suci perkataan dan perbuatan adalah...",
+                        options: [
+                            "Lain di mulut lain di hati",
+                            "Menjanji teman tetapi tidak menepatinya",
+                            "Berkata jujur dan bertindak sesuai ucapan serta kebenaran",
+                            "Menjelaskan aturan tetapi diri sendiri melanggarnya"
+                        ],
+                        answer: 2,
+                        explanation: "Integritas Pramuka ditunjukkan lewat keselarasan antara perkataan yang jujur dan perbuatan yang bersih."
+                    }
+                ]
+            },
+            {
+                cardId: 11,
+                category: "Trisatya Dasar",
+                icon: "fa-scroll",
+                questions: [
+                    {
+                        question: "Berapa jumlah kewajiban/janji utama yang terkandung di dalam Trisatya Pramuka?",
+                        options: ["10 Janji Utama", "3 Janji Utama", "5 Janji Utama", "1 Janji Utama"],
+                        answer: 1,
+                        explanation: "Trisatya berasal dari kata 'Tri' (tiga) dan 'Satya' (janji/kesetiaan), sehingga berisi 3 janji utama."
+                    },
+                    {
+                        question: "Kata 'Trisatya' secara etimologi / bahasa berarti...",
+                        options: ["Tiga Ketentuan Sikap", "Tiga Janji atau Setia", "Dasa Pedoman", "Sumpah Pemuda"],
+                        answer: 1,
+                        explanation: "Tri artinya tiga, dan Satya artinya janji atau kesetiaan."
+                    },
+                    {
+                        question: "Kapan kalimat Janji Trisatya biasanya diucapkan oleh anggota Pramuka?",
+                        options: [
+                            "Saat upacara pelantikan anggota dan ulang janji",
+                            "Saat belanja di koperasi",
+                            "Saat lomba memasak di perkemahan",
+                            "Setiap jam istirahat sekolah"
+                        ],
+                        answer: 0,
+                        explanation: "Trisatya diikrarkan dalam prosesi resmi pelantikan kenaikan tingkat atau acara Ulang Janji Pramuka."
+                    }
+                ]
+            },
+            {
+                cardId: 12,
+                category: "Trisatya Poin 1",
+                icon: "fa-flag",
+                questions: [
+                    {
+                        question: "Salah satu poin dalam Trisatya adalah menjalankan kewajiban terhadap...",
+                        options: [
+                            "Tuhan, Negara Kesatuan Republik Indonesia, dan mengamalkan Pancasila",
+                            "Diri sendiri dan kelompoknya saja",
+                            "Pembina Pramuka semata",
+                            "Teman se-regu saja"
+                        ],
+                        answer: 0,
+                        explanation: "Trisatya pertama menegaskan kewajiban Pramuka kepada Tuhan YME, NKRI, dan pengamalan nilai-nilai Pancasila."
+                    },
+                    {
+                        question: "Mengamalkan Pancasila dalam janji Trisatya mengandung arti bahwa...",
+                        options: [
+                            "Pramuka wajib menjadikan Pancasila sebagai pedoman hidup berbangsa",
+                            "Pramuka cukup menghafal teks Pancasila tanpa mengamalkannya",
+                            "Pancasila hanya berlaku saat upacara bendera",
+                            "Pramuka bebas membuat dasar negara sendiri"
+                        ],
+                        answer: 0,
+                        explanation: "Pengamalan Pancasila adalah bukti kesetiaan Pramuka terhadap ideologi bangsa Indonesia."
+                    },
+                    {
+                        question: "Wujud menjalankan kewajiban terhadap Negara Kesatuan Republik Indonesia (NKRI) bagi pelajar adalah...",
+                        options: [
+                            "Membolos sekolah demi bermain",
+                            "Belajar tekun dan menjaga persatuan antar warga",
+                            "Merusak fasilitas umum",
+                            "Tidak mau mengikuti upacara bendera"
+                        ],
+                        answer: 1,
+                        explanation: "Pelajar menjalankan kewajiban bela negara lewat prestasi, belajar sungguh-sungguh, dan merawat persatuan."
+                    }
+                ]
+            },
+            {
+                cardId: 13,
+                category: "Trisatya Poin 2",
+                icon: "fa-handshake",
+                questions: [
+                    {
+                        question: "Dalam Trisatya Penggalang, janji kepada sesama manusia berbunyi: 'Menolong sesama hidup dan ikut serta...'",
+                        options: [
+                            "Memenangi perlombaan perkemahan",
+                            "Membangun masyarakat / mempersiapkan diri membangun masyarakat",
+                            "Menguasai wilayah perkemahan",
+                            "Mencari penghargaan tertinggi"
+                        ],
+                        answer: 1,
+                        explanation: "Trisatya poin 2 Penggalang berbunyi: 'Menolong sesama hidup dan mempersiapkan diri membangun masyarakat'."
+                    },
+                    {
+                        question: "Perbedaan klausa Trisatya poin 2 untuk tingkat Penggalang dan Penegak/Pandega adalah...",
+                        options: [
+                            "Penggalang 'mempersiapkan diri', sedangkan Penegak 'ikut serta' membangun masyarakat",
+                            "Penggalang tidak wajib menolong sesama",
+                            "Penegak tidak perlu membangun masyarakat",
+                            "Tidak ada perbedaan sama sekali"
+                        ],
+                        answer: 0,
+                        explanation: "Penggalang 'mempersiapkan diri', sementara Penegak/Pandega/Pembina sudah 'ikut serta' membangun masyarakat."
+                    },
+                    {
+                        question: "Aksi nyata seorang Pramuka dalam 'mempersiapkan diri membangun masyarakat' adalah...",
+                        options: [
+                            "Aktif dalam kegiatan bakti sosial dan pelatihan keterampilan kemasyarakatan",
+                            "Menutup diri dari tetangga sekitar",
+                            "Menolak kerja bakti desa",
+                            "Hanya peduli pada diri sendiri"
+                        ],
+                        answer: 0,
+                        explanation: "Bakti sosial dan kerja bakti melatih kepekaan sosial anggota Pramuka sebelum terjun penuh ke masyarakat."
+                    }
+                ]
+            },
+            {
+                cardId: 14,
+                category: "Trisatya Poin 3",
+                icon: "fa-star",
+                questions: [
+                    {
+                        question: "Poin ketiga dalam janji Trisatya berbunyi menepati...",
+                        options: ["Pancasila", "UUD 1945", "Dasadarma", "Janji Teman"],
+                        answer: 2,
+                        explanation: "Poin ke-3 Trisatya adalah 'Menepati Dasadarma', sebagai landasan moral bagi Gerakan Pramuka."
+                    },
+                    {
+                        question: "Hubungan antara Trisatya dan Dasadarma dapat digambarkan sebagai...",
+                        options: [
+                            "Trisatya sebagai norma janji/komitmen, Dasadarma sebagai pedoman moral dan tindakan nyata",
+                            "Dua hal yang saling bertentangan",
+                            "Trisatya hanya untuk pembina, Dasadarma untuk anggota",
+                            "Aturan yang tidak wajib dilaksanakan"
+                        ],
+                        answer: 0,
+                        explanation: "Trisatya adalah ikrar janji, sedangkan Dasadarma adalah 10 moralitas hidup sehari-hari."
+                    },
+                    {
+                        question: "Menepati Dasadarma berarti seorang Pramuka berusaha...",
+                        options: [
+                            "Menjalankan 10 tuntunan moral Pramuka secara utuh dalam kehidupan",
+                            "Hanya memilih 1 dharma yang disukai",
+                            "Menghafalkan saja tanpa diterapkan",
+                            "Mengabaikan dharma saat di luar sekolah"
+                        ],
+                        answer: 0,
+                        explanation: "Pramuka sejati mengamalkan kesepuluh dharma secara konsisten."
+                    }
+                ]
+            },
+            {
+                cardId: 15,
+                category: "Kode Kehormatan",
+                icon: "fa-compass",
+                questions: [
+                    {
+                        question: "Kode Kehormatan Pramuka untuk golongan Penggalang terdiri atas...",
+                        options: [
+                            "Dwi Satya dan Dwi Darma",
+                            "Tri Satya dan Dasa Darma",
+                            "Pancasila dan Proklamasi",
+                            "Janji dan Sumpah Pemuda"
+                        ],
+                        answer: 1,
+                        explanation: "Kode Kehormatan Pramuka Penggalang terdiri dari Tri Satya (janji) dan Dasa Darma (ketentuan moral)."
+                    },
+                    {
+                        question: "Kode Kehormatan untuk tingkatan Pramuka Siaga (usia 7-10 tahun) adalah...",
+                        options: [
+                            "Dwisatya dan Dwidarma",
+                            "Trisatya dan Dasadarma",
+                            "Trisatya dan Pancasila",
+                            "Dwisatya dan Dasadarma"
+                        ],
+                        answer: 0,
+                        explanation: "Pramuka Siaga menggunakan Kode Kehormatan Dwisatya (2 janji) dan Dwidarma (2 ketentuan moral)."
+                    },
+                    {
+                        question: "Mengapa Kode Kehormatan Pramuka sangat penting bagi setiap anggotanya?",
+                        options: [
+                            "Sebagai norma, pedoman, dan pengarah pembentukan watak mulia",
+                            "Hanya agar terlihat keren saat mengenakan seragam",
+                            "Supaya memenangi setiap kejuaraan kuis",
+                            "Sebagai syarat untuk mendapatkan hadiah uang"
+                        ],
+                        answer: 0,
+                        explanation: "Kode Kehormatan merupakan landasan moral pembentuk karakter mulia dan kepribadian luhur."
+                    }
+                ]
+            }
+        ];
+
+        let cardProgress = {}; // simpan progres per kartu: { cardIndex: { completed: bool, answers: [], userChoices: [] } }
+        let activeCardIndex = null;
+        let activeQuestionIndex = 0;
+        let isAudioMuted = false;
+        let isProcessingAnswer = false; // Mencegah spaming klik
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (isAudioMuted) return;
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'flip') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.1);
+                } else if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.35);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(164.81, audioCtx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'victory') {
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.frequency.value = freq;
+                        g.gain.setValueAtTime(0.2, audioCtx.currentTime + idx * 0.12);
+                        g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + idx * 0.12 + 0.25);
+                        o.start(audioCtx.currentTime + idx * 0.12);
+                        o.stop(audioCtx.currentTime + idx * 0.12 + 0.25);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        function toggleSound() {
+            isAudioMuted = !isAudioMuted;
+            const soundIcon = document.getElementById('soundIcon');
+            const soundText = document.getElementById('soundText');
+            if (isAudioMuted) {
+                soundIcon.className = "fa-solid fa-volume-xmark text-red-400";
+                soundText.innerText = "Suara: OFF";
+            } else {
+                soundIcon.className = "fa-solid fa-volume-high text-amber-400";
+                soundText.innerText = "Suara: ON";
+                playSound('flip');
+            }
+        }
+
+        function initGame() {
+            cardProgress = {};
+            cardsData.forEach((_, idx) => {
+                cardProgress[idx] = {
+                    completed: false,
+                    answers: [], // boolean per soal
+                    userChoices: []
+                };
+            });
+            activeCardIndex = null;
+            activeQuestionIndex = 0;
+            isProcessingAnswer = false;
+
+            updateScoreboard();
+            renderCards();
+        }
+
+        function renderCards() {
+            const grid = document.getElementById('cardGrid');
+            grid.innerHTML = '';
+
+            cardsData.forEach((card, index) => {
+                const prog = cardProgress[index];
+                const isCompleted = prog.completed;
+                
+                // Hitung berapa soal benar jika completed
+                const correctCount = prog.answers.filter(a => a === true).length;
+                const isAllCorrect = isCompleted && correctCount === 3;
+
+                const cardHTML = `
+                    <div class="perspective-1000 h-32 sm:h-36 cursor-pointer" onclick="openCard(${index})">
+                        <div id="cardInner-${index}" class="card-inner relative w-full h-full rounded-2xl shadow-md border-2 border-pramuka-gold ${isCompleted ? 'is-flipped' : ''}">
+                            <div class="card-front absolute inset-0 bg-gradient-to-br from-pramuka-brownMedium to-pramuka-brownDark rounded-2xl flex flex-col items-center justify-center p-2 text-center shadow-inner">
+                                <div class="w-9 h-9 rounded-full bg-pramuka-gold flex items-center justify-center text-pramuka-brownDark font-black text-base mb-1 shadow-md border border-amber-200">
+                                    ${index + 1}
+                                </div>
+                                <i class="fa-solid ${card.icon} text-amber-300/80 text-lg mb-1"></i>
+                                <span class="text-[10px] sm:text-xs font-bold text-amber-200 uppercase tracking-wider line-clamp-1">
+                                    ${card.category}
+                                </span>
+                                <span class="text-[9px] text-amber-300/90 mt-0.5">3 Soal</span>
+                            </div>
+
+                            <div class="card-back absolute inset-0 rounded-2xl flex flex-col items-center justify-center p-2 text-center shadow-inner ${
+                                isCompleted 
+                                    ? (isAllCorrect ? 'bg-emerald-800 border-emerald-400 text-emerald-100' : 'bg-amber-900 border-amber-400 text-amber-100')
+                                    : 'bg-pramuka-brownDark text-amber-100'
+                            }">
+                                <div class="w-9 h-9 rounded-full ${isAllCorrect ? 'bg-emerald-500' : 'bg-amber-600'} text-white flex items-center justify-center text-lg mb-1 shadow">
+                                    <i class="fa-solid ${isAllCorrect ? 'fa-check' : 'fa-star'}"></i>
+                                </div>
+                                <span class="text-xs font-bold">${correctCount} / 3 Benar</span>
+                                <span class="text-[9px] opacity-80 mt-1">Selesai</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHTML;
+            });
+        }
+
+        function openCard(index) {
+            const prog = cardProgress[index];
+            if (prog.completed) {
+                // Jika kartu sudah selesai dikerjakan, tidak perlu dibuka kembali
+                return;
+            }
+
+            playSound('flip');
+            activeCardIndex = index;
+            activeQuestionIndex = prog.answers.length; 
+            isProcessingAnswer = false;
+
+            renderModalQuestion();
+
+            const modal = document.getElementById('quizModal');
+            const modalContent = document.getElementById('modalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('opacity-100');
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function renderModalQuestion() {
+            const card = cardsData[activeCardIndex];
+            const q = card.questions[activeQuestionIndex];
+            const prog = cardProgress[activeCardIndex];
+            const isQuestionAnswered = prog.answers.length > activeQuestionIndex;
+
+            document.getElementById('modalCategoryBadge').innerText = card.category;
+            document.getElementById('modalCardNumber').innerText = `Kartu #${activeCardIndex + 1}`;
+            document.getElementById('questionTracker').innerText = `Soal ${activeQuestionIndex + 1} dari 3`;
+            document.getElementById('modalQuestion').innerText = q.question;
+
+            const optionsContainer = document.getElementById('modalOptions');
+            optionsContainer.innerHTML = '';
+
+            const explanationBox = document.getElementById('explanationBox');
+            explanationBox.classList.add('hidden');
+
+            q.options.forEach((opt, optIdx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-3 sm:p-3.5 rounded-xl border-2 font-semibold text-xs sm:text-sm transition flex items-start gap-3 active:scale-[0.98] ";
+                
+                if (!isQuestionAnswered) {
+                    btn.className += "bg-white hover:bg-amber-50 border-amber-300 text-slate-800 shadow-sm";
+                    btn.onclick = () => selectAnswer(optIdx);
+                } else {
+                    const userAnswer = prog.userChoices[activeQuestionIndex];
+                    if (optIdx === q.answer) {
+                        btn.className += "bg-emerald-100 border-emerald-500 text-emerald-950 font-bold";
+                    } else if (optIdx === userAnswer && !prog.answers[activeQuestionIndex]) {
+                        btn.className += "bg-red-100 border-red-500 text-red-950 font-bold opacity-80";
+                    } else {
+                        btn.className += "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed";
+                    }
+                    btn.disabled = true;
+                }
+
+                btn.innerHTML = `
+                    <span class="w-6 h-6 rounded-full bg-amber-200/80 text-amber-900 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">
+                        ${String.fromCharCode(65 + optIdx)}
+                    </span>
+                    <span class="flex-1 leading-snug">${opt}</span>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+
+            if (isQuestionAnswered) {
+                const isCorrect = prog.answers[activeQuestionIndex];
+                showExplanation(isCorrect, q.explanation);
+            }
+        }
+
+        function selectAnswer(optionIndex) {
+            if (isProcessingAnswer) return;
+            isProcessingAnswer = true;
+
+            const card = cardsData[activeCardIndex];
+            const q = card.questions[activeQuestionIndex];
+            const isCorrect = optionIndex === q.answer;
+
+            const prog = cardProgress[activeCardIndex];
+            prog.answers.push(isCorrect);
+            prog.userChoices.push(optionIndex);
+
+            if (isCorrect) {
+                playSound('correct');
+            } else {
+                playSound('wrong');
+            }
+
+            // Tampilkan pilihan yang sudah dipilih & pembahasan
+            renderModalQuestion();
+            updateScoreboard();
+
+            // Beri jeda sebentar agar pengguna membaca pembahasan sebelum otomatis berpindah
+            setTimeout(() => {
+                if (activeQuestionIndex < 2) {
+                    // Berpindah ke soal berikutnya dalam kartu yang sama
+                    activeQuestionIndex++;
+                    isProcessingAnswer = false;
+                    renderModalQuestion();
+                } else {
+                    // Sudah selesai 3 soal pada kartu ini
+                    prog.completed = true;
+                    const cardInner = document.getElementById(`cardInner-${activeCardIndex}`);
+                    if (cardInner) {
+                        cardInner.classList.add('is-flipped');
+                    }
+                    
+                    closeModal();
+
+                    // Cek apakah seluruh 15 kartu (45 soal) telah selesai
+                    const totalAnswered = Object.values(cardProgress).reduce((acc, c) => acc + c.answers.length, 0);
+                    if (totalAnswered === 45) {
+                        setTimeout(() => {
+                            showVictoryModal();
+                        }, 400);
+                    }
+                }
+            }, 1200); // Penundaan 1,2 detik
+        }
+
+        function showExplanation(isCorrect, explanationText) {
+            const box = document.getElementById('explanationBox');
+            const icon = document.getElementById('explanationIcon');
+            const title = document.getElementById('explanationTitle');
+            const text = document.getElementById('explanationText');
+
+            box.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-300', 'bg-red-50', 'border-red-300');
+            
+            if (isCorrect) {
+                box.classList.add('bg-emerald-50', 'border-emerald-300');
+                icon.className = "fa-solid fa-circle-check text-emerald-600 text-base";
+                title.className = "text-emerald-800 font-bold";
+                title.innerText = "Jawaban Tepat!";
+            } else {
+                box.classList.add('bg-red-50', 'border-red-300');
+                icon.className = "fa-solid fa-circle-xmark text-red-600 text-base";
+                title.className = "text-red-800 font-bold";
+                title.innerText = "Jawaban Kurang Tepat";
+            }
+
+            text.innerText = explanationText;
+        }
+
+        function updateScoreboard() {
+            let totalAnswered = 0;
+            let totalScore = 0;
+
+            Object.values(cardProgress).forEach(prog => {
+                totalAnswered += prog.answers.length;
+                totalScore += prog.answers.filter(a => a === true).length;
+            });
+
+            document.getElementById('progressText').innerText = `${totalAnswered} / 45`;
+            document.getElementById('scoreText').innerText = totalScore;
+            
+            const grade = Math.round((totalScore / 45) * 100);
+            document.getElementById('gradeText').innerText = grade;
+
+            const percentage = (totalAnswered / 45) * 100;
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('quizModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            modal.classList.remove('opacity-100');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                isProcessingAnswer = false;
+                renderCards();
+            }, 200);
+        }
+
+        function showVictoryModal() {
+            playSound('victory');
+            let totalScore = 0;
+            Object.values(cardProgress).forEach(prog => {
+                totalScore += prog.answers.filter(a => a === true).length;
+            });
+
+            const finalScore = Math.round((totalScore / 45) * 100);
+
+            document.getElementById('finalCorrect').innerText = `${totalScore} / 45`;
+            document.getElementById('finalScore').innerText = finalScore;
+
+            let msg = "Terus tingkatkan pemahaman Kode Kehormatan Pramuka!";
+            if (finalScore === 100) {
+                msg = "Luar Biasa Sempurna! Kamu master Dasadarma & Trisatya!";
+            } else if (finalScore >= 80) {
+                msg = "Hebat! Pemahaman Dasadarma & Trisatya sangat mantap!";
+            } else if (finalScore >= 60) {
+                msg = "Bagus! Terus tingkatkan dan pelajari lagi ya!";
+            }
+
+            document.getElementById('finalMessage').innerText = msg;
+            document.getElementById('victoryModal').classList.remove('hidden');
+        }
+
+        function closeVictoryModal() {
+            document.getElementById('victoryModal').classList.add('hidden');
+        }
+
+        function resetGame() {
+            playSound('flip');
+            initGame();
+        }
+
+        window.onload = function () {
+            initGame();
+        };
+    </script>
+</body>
+</html>
